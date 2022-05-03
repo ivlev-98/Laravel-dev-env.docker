@@ -1,0 +1,52 @@
+version: '3'
+
+volumes:
+    mariadb:
+    redis:
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    volumes:
+      - ./services/nginx/conf/:/etc/nginx/conf.d
+      - ./src:/var/www
+      - ./services/nginx/logs:/var/log/nginx
+    ports:
+      - 8000:80
+    depends_on:
+      - app
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./services/php/build/Dockerfile
+    volumes:
+      - ./src:/var/www
+      - ./services/php/conf/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./services/php/conf/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ./services/php/logs/:/var/log/php
+      - ./services/php/logs/:/var/log/xdebug
+      - ./services/php/xdebug/:/tmp/xdebug
+    depends_on:
+      - mariadb
+      - redis
+  mariadb:
+    container_name: mariadb
+    image: mariadb:latest
+    volumes:
+      - mariadb:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MARIADB_DATABASE=mariadb
+      - MARIADB_USER=mariadb
+      - MARIADB_PASSWORD=mariadb
+      - MARIADB_ROOT_PASSWORD=root
+  redis:
+    container_name: redis
+    image: redis:latest
+    volumes:
+      - redis:/data
+    ports:
+      - 6379:6379

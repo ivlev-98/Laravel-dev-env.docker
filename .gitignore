@@ -1,0 +1,4 @@
+/services/nginx/logs
+/services/php/logs
+/services/php/xdebug
+/.vscode
