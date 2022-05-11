@@ -7,10 +7,13 @@ RUN apt-get update && apt-get full-upgrade -y && apt-get install -y \
     libjpeg-dev \
     libzip-dev \
     git \
+    libmagickwand-dev \
     unzip && \
     pecl install -o -f redis && \
     pecl install -o -f xdebug && \
+    pecl install -o -f imagick && \
     rm -rf /tmp/pear && \
+    docker-php-ext-enable imagick && \
     docker-php-ext-enable redis && \
     docker-php-ext-install pdo_mysql && \
     docker-php-ext-install bcmath && \
